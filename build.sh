@@ -21,7 +21,7 @@
 # This script is normally invoked via GitHub actions, whenever a new tag is pushed 
 
 DOCKER_REPO=hpccsystemslegacy
-IMAGE_NAME=client       # client or cleint-ee or customized
+IMAGE_NAME=clienttools       # clienttools or cleinttools-ee or customized
 LINUX_DISTRO=ubuntu     # ubuntu or centos
 BASE_NAME=client-base
 BASE_TAG=8-focal              # either 8-focal or 8-el7 for hpccystemslegacy/hpcc-basey.
@@ -59,26 +59,30 @@ if [[ "$INPUT_LATEST" = "1" ]] ; then
   LATEST=1
 fi
 
+if [ "${LINUX_DISTRO}" = "ubuntu" ]
+then
+  PACKAGE_NAME="hpccsystems-clienttools-community_${HPCC_VER}focal_amd64.deb"
+else
+  PACKAGE_NAME="hpccsystems-clienttools-community_${HPCC_VER}.el7.x86_64.rpm" 
+fi
+
 export VERSION_MMP=${HPCC_VER%-*}
 if [ "${PACKAGE_TYPE}" = "ce" ]
 then
-  PACKAGE_NAME="hpccsystems-clienttools-community_${HPCC_VER}focal_amd64.deb"
   URL_BASE="http://d2wulyp08c6njk.cloudfront.net/releases/CE-Candidate-${VERSION_MMP}/bin/clienttools"
 else   # ee
-  PACKAGE_NAME="hpccsystems-clienttools-internal_${HPCC_VER}.el7.x86_64.rpm" 
   URL_BASE="http://10.240.32.242/builds/LN-Candidate-${VERSION_MMP}/bin/clienttools"
 fi
 
 [[ -n ${INPUT_PACKAGE_NAME} ]] && PACKAGE_NAME=${INPUT_PACKAGE_NAME}
 [[ -n ${INPUT_URL_BASE} ]] && URL_BASE=${INPUT_URL_BASE}
 
-
 build_image() {
 
   if ! docker pull ${DOCKER_REPO}/${IMAGE_NAME}:${HPCC_VER} ; then
     docker image build -t ${DOCKER_REPO}/${IMAGE_NAME}:${HPCC_VER} \
        --build-arg DOCKER_REPO=${DOCKER_REPO} \
-       --build-arg BASE_BASE=${BASE_BASE} \
+       --build-arg BASE_NAME=${BASE_NAME} \
        --build-arg BASE_TAG=${BASE_TAG} \
        --build-arg PACKAGE_NAME=${PACKAGE_NAME} \
        --build-arg URL_BASE=${URL_BASE} \

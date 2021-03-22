@@ -16,13 +16,14 @@
 ARG DOCKER_REPO
 ARG BASE_NAME
 ARG BASE_TAG
-ARG PACKAGE_NAME
-ARG URL_BASE
 FROM ${DOCKER_REPO}/${BASE_NAME}:${BASE_TAG}
 
+ARG PACKAGE_NAME
+ARG URL_BASE
 
 RUN set -ex; \
    apt-get update; \
+   echo  "package url: ${URL_BASE}/${PACKAGE_NAME}"; \
    wget  "${URL_BASE}/${PACKAGE_NAME}"; \
    #echo "$CLIENTTOOLS_DOWNLOAD_MD5 ${CLIENTTOOLS_PACKAGE}" | md5sum -c -; \
    dpkg -i "${PACKAGE_NAME}" ;\
