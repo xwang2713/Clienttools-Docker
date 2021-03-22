@@ -73,6 +73,7 @@ export VERSION_MMP=${HPCC_VER%-*}
 if [ "${PACKAGE_TYPE}" = "ce" ]
 then
   URL_BASE="http://d2wulyp08c6njk.cloudfront.net/releases/CE-Candidate-${VERSION_MMP}/bin/clienttools"
+  #URL_BASE="http://10.240.32.242/builds/CE-Candidate-${VERSION_MMP}/bin/clienttools"
 else   # ee
   URL_BASE="http://10.240.32.242/builds/LN-Candidate-${VERSION_MMP}/bin/clienttools"
 fi
