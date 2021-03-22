@@ -47,6 +47,7 @@ pushd $DIR 2>&1 > /dev/null
 [[ -n ${INPUT_IMAGE_NAME} ]] && IMAGE_NAME=${INPUT_IMAGE_NAME}
 [[ -n ${INPUT_PUSH_REPO} ]] && PUSH_REPO=${INPUT_PUSH_REPO}
 
+echo "HPCC Version: $HPCC_VER"
 
 if [[ -n ${INPUT_USERNAME} ]] ; then
   echo ${INPUT_PASSWORD} | docker login -u ${INPUT_USERNAME} --password-stdin ${INPUT_REGISTRY}
