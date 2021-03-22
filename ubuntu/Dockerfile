@@ -23,7 +23,6 @@ FROM ${DOCKER_REPO}/${BASE_NAME}:${BASE_TAG}
 
 RUN set -ex; \
    apt-get update; \
-   apt-get install -y  \
    wget  "${URL_BASE}/${PACKAGE_NAME}"; \
    #echo "$CLIENTTOOLS_DOWNLOAD_MD5 ${CLIENTTOOLS_PACKAGE}" | md5sum -c -; \
    dpkg -i "${PACKAGE_NAME}" ;\

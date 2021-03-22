@@ -21,6 +21,7 @@
 # This script is normally invoked via GitHub actions, whenever a new tag is pushed 
 
 DOCKER_REPO=hpccsystemslegacy
+IMAGE_NAME=client       # client or cleint-ee or customized
 LINUX_DISTRO=ubuntu     # ubuntu or centos
 BASE_NAME=client-base
 BASE_TAG=8-focal              # either 8-focal or 8-el7 for hpccystemslegacy/hpcc-basey.
@@ -28,6 +29,7 @@ HPCC_VER=             # such as 8.0.0-rc1
 PACKAGE_NAME=
 URL_BASE=
 PACKAGE_TYPE=ce        # ce or ee "ee" includes EE plugins for LN
+PUSH_REPO=hpccsystemslegacy #gitlab.ins.risk.regn.net:4567/docker-images/hpccsystems
 
 set -e
 
@@ -42,7 +44,14 @@ pushd $DIR 2>&1 > /dev/null
 [[ -n ${INPUT_BASE_NAME} ]] && BASE_NAME=${INPUT_BASE_NAME}
 [[ -n ${INPUT_BASE_TAG} ]] && BASE_TAG=${INPUT_BASE_TAG}
 [[ -n ${INPUT_PACKAGE_TYPE} ]] && PACKAGE_TYPE=${INPUT_PACKAGE_TYPE}
+[[ -n ${INPUT_IMAGE_NAME} ]] && IMAGE_NAME=${INPUT_IMAGE_NAME}
+[[ -n ${INPUT_PUSH_REPO} ]] && PUSH_REPO=${INPUT_PUSH_REPO}
 
+
+if [[ -n ${INPUT_USERNAME} ]] ; then
+  echo ${INPUT_PASSWORD} | docker login -u ${INPUT_USERNAME} --password-stdin ${INPUT_REGISTRY}
+  PUSH=1
+fi
 
 #HPCC_SHORT_TAG=$(echo $BUILD_TAG | cut -d'_' -f 2)
 
@@ -65,40 +74,36 @@ fi
 
 
 build_image() {
-  local name=$1
-  local label=$2
-  [[ -z ${label} ]] && label=$BUILD_LABEL
 
-  if ! docker pull hpccsystems/${name}:${label} ; then
-    docker image build -t hpccsystems/${name}:${label} \
-       --build-arg BASE_VER=${BASE_VER} \
-       --build-arg DOCKER_REPO=hpccsystems \
-       --build-arg BUILD_TAG=${BUILD_TAG} \
-       ${name}/ 
+  if ! docker pull ${DOCKER_REPO}/${IMAGE_NAME}:${HPCC_VER} ; then
+    docker image build -t ${DOCKER_REPO}/${IMAGE_NAME}:${HPCC_VER} \
+       --build-arg DOCKER_REPO=${DOCKER_REPO} \
+       --build-arg BASE_BASE=${BASE_BASE} \
+       --build-arg BASE_TAG=${BASE_TAG} \
+       --build-arg PACKAGE_NAME=${PACKAGE_NAME} \
+       --build-arg URL_BASE=${URL_BASE} \
+       ${LINUX_DISTRO}/ 
   fi
-  push_image $name $label
+  push_image 
 }
 
 push_image() {
-  local name=$1
-  local label=$2
   if [ "$LATEST" = "1" ] ; then
-    docker tag hpccsystems/${name}:${label} hpccsystems/${name}:latest
+    docker tag ${PUSH_REPO}/${IMAGE_NAME}:${HPCC_VER} ${PUSH_REPO}/${IMAGE_NAME}:latest
     if [ "$PUSH" = "1" ] ; then
-      docker push hpccsystems/${name}:${label}
-      docker push hpccsystems/${name}:latest
+      docker push ${PUSH_REPO}/${IMAGE_NAME}:${HPCC_VER}
+      docker push ${PUSH_REPO}/${IMAGE_NAME}:latest
     fi
   else
     if [ "$PUSH" = "1" ] ; then
-      docker push hpccsystems/${name}:${label}
+      docker push ${PUSH_REPO}/${IMAGE_NAME}:${HPCC_VER}
     fi
   fi
 }
 
-build_image clienttools
-build_image clienttools-ee
+build_image
 
 if [[ -n ${INPUT_PASSWORD} ]] ; then
-  echo "::set-output name=${BUILD_LABEL}"
+  echo "::set-output name=${HPCC_VER}"
   docker logout
 fi
