@@ -25,6 +25,7 @@ IMAGE_NAME=clienttools       # clienttools or cleinttools-ee or customized
 LINUX_DISTRO=ubuntu     # ubuntu or centos
 BASE_NAME=client-base
 BASE_TAG=8-focal              # either 8-focal or 8-el7 for hpccystemslegacy/hpcc-basey.
+BUILD_TAG=$(git describe --exact-match --tags) 
 HPCC_VER=             # such as 8.0.0-rc1
 PACKAGE_NAME=
 URL_BASE=
@@ -47,6 +48,7 @@ pushd $DIR 2>&1 > /dev/null
 [[ -n ${INPUT_IMAGE_NAME} ]] && IMAGE_NAME=${INPUT_IMAGE_NAME}
 [[ -n ${INPUT_PUSH_REPO} ]] && PUSH_REPO=${INPUT_PUSH_REPO}
 
+[[ -z ${HPCC_VER} ]] && HPCC_VER=${BUILD_TAG}
 echo "HPCC Version: $HPCC_VER"
 
 if [[ -n ${INPUT_USERNAME} ]] ; then
