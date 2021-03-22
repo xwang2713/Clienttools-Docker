@@ -47,6 +47,9 @@ RUN set -ex; \
                 libmemcached          \
                 vim-minimal           \
                 R-core                \
+                libcurl3-gnutls       \
+                curl                  \
+                git                   \
                 java-latest-openjdk   \
                 python36      \
                 shiboken-python-libs  \

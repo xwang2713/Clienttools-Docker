@@ -25,6 +25,7 @@ RUN apt-get clean -y && \
 RUN apt-get install -y --no-install-recommends \
 		ca-certificates       \
 		wget                  \
+		git                   \
                 libaprutil1           \
                 libboost-regex1.71.0  \
                 libicu66              \

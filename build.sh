@@ -50,13 +50,18 @@ if [[ "$INPUT_LATEST" = "1" ]] ; then
   LATEST=1
 fi
 
+export VERSION_MMP=${HPCC_VER%-*}
 if [ "${PACKAGE_TYPE}" = "ce" ]
 then
   PACKAGE_NAME="hpccsystems-clienttools-community_${HPCC_VER}focal_amd64.deb"
-  URL_BASE=
+  URL_BASE="http://d2wulyp08c6njk.cloudfront.net/releases/CE-Candidate-${VERSION_MMP}/bin/clienttools"
 else   # ee
+  PACKAGE_NAME="hpccsystems-clienttools-internal_${HPCC_VER}.el7.x86_64.rpm" 
+  URL_BASE="http://10.240.32.242/builds/LN-Candidate-${VERSION_MMP}/bin/clienttools"
 fi
 
+[[ -n ${INPUT_PACKAGE_NAME} ]] && PACKAGE_NAME=${INPUT_PACKAGE_NAME}
+[[ -n ${INPUT_URL_BASE} ]] && URL_BASE=${INPUT_URL_BASE}
 
 
 build_image() {
